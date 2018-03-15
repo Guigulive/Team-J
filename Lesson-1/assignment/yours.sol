@@ -1,4 +1,3 @@
-/*作业请提交在这个目录下*/
 pragma solidity ^0.4.14;
 
 contract Payroll {
@@ -15,8 +14,9 @@ contract Payroll {
     function updateEmployee(address new_employee) {
         require (msg.sender == boss);
         require (new_employee != 0x0);
-        owned_salary = (now - lastPayday) * salary / payDuration
-        employee.transfer(owned_salary)
+        require (new_employee != employee);
+        uint owned_salary = (now - lastPayday) * salary / payDuration;
+        employee.transfer(owned_salary);
         employee = new_employee;
     }
     
