@@ -68,14 +68,14 @@ contract Payroll{
 
     // 更换雇员
     function setEmployee(address e)  returns (address)  {
-        //payment();   
+        payment();   
         employee = e;
         return employee;
     }
 
     // 调整工资，以 ether 为单位
 	function setSalary(uint s)  returns (uint){
-	    //payment();   
+	    payment();   
 		salary = s * 1 ether;
 		return salary;
 	} 
