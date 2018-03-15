@@ -14,7 +14,9 @@ contract Payroll {
     
     function updateEmployee(address new_employee) {
         require (msg.sender == boss);
-        require (new_employee == 0x0);
+        require (new_employee != 0x0);
+        owned_salary = (now - lastPayday) * salary / payDuration
+        employee.transfer(owned_salary)
         employee = new_employee;
     }
     
