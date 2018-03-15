@@ -5,7 +5,7 @@ contract Payroll {
     address employee;
     
     uint salary = 1 ether;
-    uint constant payDuration = 15 seconds;
+    uint constant payDuration = 10 seconds;
     uint lastPayDay = now;
     
     function addFund() payable returns (uint){
@@ -51,26 +51,30 @@ contract Payroll {
         return employee;
     }
     
-    //change the address of employee, this employee can do it
-    function chgAddress(address newAddress) payable returns(address){
-        require(msg.sender == employee && newAddress != 0x0);
-        //transfer the remaining salary in the original address to the new address
-        uint payment = salary * ((now-lastPayDay) / payDuration);   
-        if(payment > 0 && payment < this.balance){
-            newAddress.transfer(payment);
-        }
-        else{
-            revert();
-        }
+    //change the employee, the owner can do it
+    function chgAddress(address newAddress) returns(address){
+        require(msg.sender == owner && newAddress != 0x0); 
+        clearUnpaid();
+        lastPayDay = now;
         employee = newAddress;
         return employee;
     }
     
-    //change the salary of employee, the owner can do it
+    //change the salary of employee, the owner can do it, using ether as unit
     function chgSalary(uint newSalary) returns(uint){
         require(msg.sender == owner);
+        clearUnpaid();
         salary = newSalary * 1 ether;
         return salary;
+    }
+    
+    //clear the remaining unpaid money
+    function clearUnpaid() payable{
+        uint payment = salary * ((now-lastPayDay) / payDuration);   
+        if(payment > 0){
+            lastPayDay = now;
+            employee.transfer(payment);
+        }
     }
     
 }
