@@ -59,27 +59,23 @@ contract Payroll{
 		if (msg.sender != employer){
 			revert();
 		}
-
-        if (employee == 0x0) {
-        	revert();
-        }
-        
-        uint amount = salary * (now - lastPayday) / payDuration;
         lastPayday = now;
-        employee.transfer(amount);
-        
+        if (employee != 0x0) {
+        	uint amount = salary * (now - lastPayday) / payDuration;
+            employee.transfer(amount);
+        }
 	}
 
     // 更换雇员
     function setEmployee(address e)  returns (address)  {
-        payment();   
+        //payment();   
         employee = e;
         return employee;
     }
 
     // 调整工资，以 ether 为单位
 	function setSalary(uint s)  returns (uint){
-	    payment();   
+	    //payment();   
 		salary = s * 1 ether;
 		return salary;
 	} 
