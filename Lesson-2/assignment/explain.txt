@@ -18,13 +18,13 @@ transaction cost  execution cost
 设立状态变量totalSalary，每次进行可能改变totalSalary的操作（add/remove/update）之后，更新计算totalSalary的值，只考虑更新的那一部分产生的影响。
 计算calculateRunaway时直接用balance/totalSalray。
 在add/remove/update中会有少许的消耗增加，但是能够大幅度减少calculateRunaway()的消耗。
-自己考虑的一个隐患：使用一个状态变量totalSalary长时间维护所有的薪水总和欠妥，可能在bug或不正常运行时同步totalSalary失败。
+自己考虑的一个隐患：使用一个状态变量totalSalary长时间维护所有的薪水总和欠妥，可能在bug或不正常运行时同步totalSalary失败，导致该状态变量失准。
 可能的解决：在合约中，每隔一段时间还是遍历employees[]计算正确的totalSalary。（这次code中未实现）
 不知道这个考虑合适否，请老师点评~
 
 优化后，增加10个employee，每次增加完成后调用calculateRunaway()的消耗(gas)：
 
 transaction cost  execution cost
-22102	830
+22102	            830
 
 每次的cost恒定不变，execution cost为830cost，相对优化之前大量减少，且不随employees[]元素增多而增多。
