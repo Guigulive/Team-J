@@ -65,7 +65,7 @@ contract Payroll {
         _partialPaid(employee);
         // 改进calculateRunnway
         // 先减去原工资再计算加入更新工资
-        totalSalary = -employees[index].salary + salary * 1 ether;
+        totalSalary = totalSalary - employees[index].salary + salary * 1 ether;
         employees[index].salary = salary * 1 ether;
         employees[index].lastPayday = now;
     }
