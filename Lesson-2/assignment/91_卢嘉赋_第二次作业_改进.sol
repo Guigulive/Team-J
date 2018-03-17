@@ -65,7 +65,9 @@ contract Payroll {
         assert(employee.id != 0*0);
         
         _partialPaid(employee); // 结清工资
-        employees[index].salary = salary;
+        totalSalary -= employees[index].salary;
+        employees[index].salary = salary * 1 ether;
+        totalSalary += employees[index].salary;
         employees[index].lastPayday = now;
         
     }
