@@ -3,23 +3,41 @@ pragma solidity ^0.4.14;
 
 contract Payroll{
     uint salary; //= 1 wei;
-    address frank; //=0xca35b7d915458ef540ade6068dfe2f44e8fa733c ; //-->account
+    address employee; //=0xca35b7d915458ef540ade6068dfe2f44e8fa733c ; //-->account
     uint constant payDuration = 10 seconds;
     uint lastPayday = now;
+    address owner;
     
-    function setEmployee(address x)
+    function Payroll()
     {
-        frank = x;
+       owner = msg.sender;
+    }
+    
+    function updateEmployee(address x ,uint y )
+    {
+        
+        //if(msg.sender != owner)//确定是合约创建者
+        //{
+        //   revert();
+        //}//简化如下：
+        require(msg.sender == owner);
+        
+        if(employee!= 0x0)
+        {
+           uint payment = salary *(now - lastPayday)/payDuration;//如果当前合约上有员工，则先给该员工进行结算
+           employee.transfer(payment);
+        }
+        
+
+            employee = x;
+            salary = y* 1 ether;//保证单位
+            lastPayday = now;
+        
     }
     
     function getEmployee() returns(address)
     {
-        return frank;
-    }
-    
-    function setSalary(uint x)
-    {
-        salary = x;
+        return employee;
     }
     
     function getSalary() returns(uint)
@@ -41,19 +59,22 @@ contract Payroll{
     }
     
     function getPaid() {
-        //if(msg.sender != frank)
+        //if(msg.sender != employee)
        // {
-         //   revert();
-       // }
+       //     revert();
+       // }//简化如下
+        require(msg.sender == employee);
         
         uint nextPayday = lastPayday + payDuration; 
-        if(nextPayday > now)
-        {
-            revert();
-        }
+        
+        //if(nextPayday > now)
+        //{
+        //    revert();
+        //}//简化如下：
+        assert(nextPayday < now);//运行时判断
         
         lastPayday = nextPayday;//quand on paie, il faut changer les properties avant transfer.
-        frank.transfer(salary);
+        employee.transfer(salary);
         
     }
 }
