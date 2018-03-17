@@ -25,4 +25,7 @@ GAS的消耗情况:
 - 如何优化calculateRunway这个函数来减少gas的消耗？
 ---
 用一个全局变量来记录总的salary，不用调用函数时每次计算
+固定的gas消耗：
+ transaction cost 	22122 gas 
+ execution cost 	850 gas 
 
