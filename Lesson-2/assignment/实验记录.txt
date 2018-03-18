@@ -1,0 +1,31 @@
+【实验记录】
+
+- 加入十个员工，每个员工的薪水都是1ETH
+每次加入一个员工后调用calculateRunway这个函数，并且记录消耗的gas是多少？Gas变化么？如果有 为什么？
+
+Gas 消耗记录
+1、 execution cost 1694
+2、 execution cost 2475
+3、 execution cost 3256
+4、 execution cost 4037
+5、 execution cost 4818
+6、 execution cost 5599
+7、 execution cost 6380
+8、 execution cost 7161
+9、 execution cost 7942
+10、 execution cost 8754
+
+从Gas消耗记录可以看出，每次消耗的值呈递增状态，大约在800gas左右
+分析原因是随着数组的增大，calculateRunway计算的次数增多了，每一次计算都消耗gas。
+
+
+- 如何优化calculateRunway这个函数来减少gas的消耗？
+优化方式是，其实每次只变化一名员工，把 totalSalary变为全局变量，增删员工时，及时跟新totalSalary即可，不必每次循环数组来计算，将负责度从 o(n) 降到 o（1）
+
+优化后代码如 91_卢嘉赋_第二次作业_改进.sol
+
+优化后 calculateRunway这个函数 每次消耗 852 gas
+
+
+
+
