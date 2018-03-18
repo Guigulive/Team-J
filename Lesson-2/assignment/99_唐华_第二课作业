@@ -122,8 +122,33 @@ gas消耗增加的原因：每次call函数calculateRunway，都要遍历员工�
 第二步：
 addEmployee（）中：totalSalary += employees[index].salary;
 removeEmployee（）中：totalSalary -= employees[index].salary;
+updateEmployee（）中：totalSalary += employees[index].salary;
 第三步：
 function calculateRunway() returns (uint){
         return this.balance / totalSalary;
     }
 每次添加或移除员工的时候，直接计算totalSalary，避免再次遍历数组重复计算消耗gas。
+
+优化后gas消耗情况：
+第一个员工:0x0e12d2a6c927b56af04a3969f130527284941235
+addEmployee（）gas消耗：125942+103070
+calculateRunway（）的gas消耗：22124+852
+gas：251988
+
+第二个员工：0xbf066b7d24c46619974574721136cd3dc91679e4
+addEmployee（）gas消耗：96783+73911
+calculateRunway（）的gas消耗：22124+852
+gas：193670
+
+第三个员工：0x4c40ba0c9b79a2375b5ada767ac76c7c705edf50
+addEmployee（）gas消耗：97624+74752
+calculateRunway（）的gas消耗：22124+852
+gas：195370
+
+第四个员工：0x046d1777aff6e37020d4c632e666fbdab41ce652
+addEmployee（）gas消耗：98465+75593
+calculateRunway（）的gas消耗：22124+852
+gas：197034
+
+优化后，calculateRunway（）的gas消耗不变，为22124+852，addEmployee（）和calculateRunway（）的整体gas消耗小于优化之前。
+
