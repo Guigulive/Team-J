@@ -39,7 +39,7 @@ contract Payroll {
     function removeEmployee(address employeeId){
         require(msg.sender == owner && employees.length>0);
         var(employee,index) = _findEmployee(employeeId);
-        assert(employee.id != 0x0); //employeeId not in the employee list
+        assert(employee.id != 0x0); //employeeId exist in the employee list
         _partialPaid(employee);
         delete employees[index];
         employees[index] = employees[employees.length - 1];
@@ -49,7 +49,7 @@ contract Payroll {
     function updateEmployee(address employeeId, uint salary){
         require(msg.sender == owner);
         var(employee,index) = _findEmployee(employeeId);
-        assert(employee.id == 0x0); //employeeId not in the employee list
+        assert(employee.id != 0x0); //employeeId exist in the employee list
         _partialPaid(employee);
         employees[index].salary = salary * 1 ether;
         employees[index].lastPayday = now;
