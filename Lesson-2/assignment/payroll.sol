@@ -3,6 +3,8 @@ pragma solidity ^0.4.14;
 contract Payroll {
     
     // 
+    uint totalSalary = 0 ;
+    // 
     struct Employee {
         address id;
         uint salary;
@@ -41,6 +43,9 @@ contract Payroll {
         assert(employee.id ==0x0);
         
         employees.push(Employee(employeeId,salary * 1 ether,now));
+        
+        // update totalSalary after add 
+        totalSalary += salary * 1 ether;
     }
     
     function removeEmployee(address employeeId) {
@@ -51,10 +56,12 @@ contract Payroll {
         
         _partialPaid(employee);
         
+        // update totalSalary after remove 
+        totalSalary -= employees[index].salary;
+        
         delete employees[index];
         employees[index] = employees[employees.length -1];
         employees.length -=1;
-        
     }
     
     
@@ -64,6 +71,9 @@ contract Payroll {
         assert(employee.id !=0x0);
         
          _partialPaid(employee);
+         // update totalSalary after update
+         totalSalary += (salary - employees[index].salary);
+         
         employees[index].salary = salary;
         employees[index].lastPayday = now;
     }
@@ -73,10 +83,6 @@ contract Payroll {
     }
     
     function calculateRunway() returns (uint) {
-        uint totalSalary = 0;
-        for (uint i = 0; i < employees.length; i++) {
-            totalSalary += employees[i].salary;
-        }
         return this.balance / totalSalary;
     }
     
@@ -97,4 +103,3 @@ contract Payroll {
         employees[index].id.transfer(employee.salary);
     }
 }
-
