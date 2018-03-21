@@ -4,7 +4,7 @@ pragma solidity ^0.4.18;
 import "./SafeMath.sol";
 import "./Ownable.sol";
 
-contract Payroll is Ownable{
+contract Payroll is Ownable {
 
     using SafeMath for uint;
     //员工结构
