@@ -1,5 +1,8 @@
 pragma solidity ^0.4.14;
-contract Payroll {
+import './SafeMath.sol';
+import './Ownable.sol';
+contract Payroll is Ownable{
+    using SafeMath for uint;
     //struct of one employee
     struct Employee {
         address id;
@@ -8,14 +11,14 @@ contract Payroll {
     }
     
     uint constant payDuration = 10 seconds;
-    address owner = msg.sender;
+    //address owner = msg.sender;
     mapping(address => Employee) employees;
     uint totalSalary = 0;
     
-    modifier onlyOwner{
+    /*modifier onlyOwner{
         require(msg.sender == owner);
         _;
-    }
+    }*/
     modifier employeeExist(address employeeId){
         var employee = employees[employeeId];
         assert(employee.id != 0x0);
@@ -29,20 +32,20 @@ contract Payroll {
     
     //clear the unpaid salary
     function _partialPaid(Employee employee) private{
-        uint payment = employee.salary * (now - employee.lastPayday) / payDuration;
+        uint payment = employee.salary.mul((now.sub(employee.lastPayday)).div(payDuration));
         employee.id.transfer(payment);
     }
     
     function addEmployee(address employeeId, uint salary) onlyOwner employeeNotExist(employeeId){
         var employee = employees[employeeId];
-        totalSalary += (salary * 1 ether);
+        totalSalary = totalSalary.add((salary * 1 ether));
         employees[employeeId]= Employee(employeeId,(salary * 1 ether),now);
     }
     
     function removeEmployee(address employeeId) onlyOwner employeeExist(employeeId){
         var employee = employees[employeeId];
         _partialPaid(employee);
-        totalSalary -= employees[employeeId].salary;
+        totalSalary = totalSalary.sub(employees[employeeId].salary);
         delete employees[employeeId];
     }
     
@@ -50,7 +53,7 @@ contract Payroll {
     function updateEmployee(address employeeId, uint salary) onlyOwner employeeExist(employeeId){
         var employee = employees[employeeId];
         _partialPaid(employee);
-        totalSalary += (salary - employee.salary);
+        totalSalary = (totalSalary.add(salary * 1 ether)).sub(employee.salary);
         employees[employeeId].salary = salary * 1 ether;
         employees[employeeId].lastPayday = now;
     }
@@ -70,7 +73,7 @@ contract Payroll {
     //a employee get the salary of one single duration
     function getPaid() employeeExist(msg.sender){
         var employee = employees[msg.sender];
-        uint nextPayday = employee.lastPayday + payDuration;
+        uint nextPayday = employee.lastPayday.add(payDuration);
         assert(nextPayday < now);
         employees[msg.sender].lastPayday = nextPayday;
         employee.id.transfer(employee.salary);
