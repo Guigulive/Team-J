@@ -3,7 +3,7 @@
 
 //优化之前代码
 pragma solidity ^0.4.14;
-contract Payroll{
+contract Payroll { 
 	//员工结构对象
     struct Employee{
         address addr;
