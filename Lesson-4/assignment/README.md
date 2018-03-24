@@ -7,11 +7,11 @@
 - function addEmployee(address employeeId, uint salary) onlyOwner
 - function removeEmployee(address employeeId) onlyOwner employeeExist(employeeId)
 
-运行截图:
+运行截图:  
 ![image.png](https://ipfs.busy.org/ipfs/QmUKLwn28FKtPMGJFuAiXbCSaDNJr9Ko78J5FYgYaZeof2)
 
-- 思考一下我们如何能覆盖所有的测试路径，包括函数异常的捕捉
-需要assert(false, "xxxx"), 否则可能无法正常捕捉异常。
+- 思考一下我们如何能覆盖所有的测试路径，包括函数异常的捕捉  
+  > 需要assert(false, "xxxx"), 否则可能无法正常捕捉异常。
 
 - (加分题,选作）
 - 写出对以下函数的基于solidity或javascript的单元测试 function getPaid() employeeExist(msg.sender)
