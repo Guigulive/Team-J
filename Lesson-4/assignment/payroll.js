@@ -2,6 +2,18 @@ var Payroll = artifacts.require("./Payroll.sol");
 
 contract('PayrollTEST', function(accounts){
 
+    it("Should not add an employee with negative salary:", function() {
+        return Payroll.deployed().then(function(instance) {
+             payrollInstance = instance;
+            console.log("---addEmployee(accounts[1],-2 ether)---");
+            return payrollInstance.addEmployee(accounts[1], -2);
+        }).then(function() {
+            return payrollInstance.employees.call(accounts[1]);
+        }).catch(function(error) {
+            assert.include(error.toString(), "invalid opcode", "Fail");
+        });
+    });
+
     it("Should add an employee:", function() {
         return Payroll.deployed().then(function(instance) {
              payrollInstance = instance;
@@ -14,17 +26,6 @@ contract('PayrollTEST', function(accounts){
             assert.equal(web3.fromWei(employee[1].toNumber(),'ether'), 2, "salary mismatch, failed");
         });
       });
-
-    it("Should not add an employee with negative salary:", function() {
-        return Payroll.deployed().then(function(instance) {
-             payrollInstance = instance;
-            console.log("---addEmployee(accounts[1],-2 ether)---");
-            return payrollInstance.addEmployee(accounts[1], -2);
-        }).then(function() {
-            return payrollInstance.employees.call(accounts[1]);
-        }).catch(function(error) {
-        });
-    });
     
     it("Should not add an existing employee:", function() {
         return Payroll.deployed().then(function(instance) {
@@ -32,6 +33,7 @@ contract('PayrollTEST', function(accounts){
             console.log("---addEmployee(accounts[1],2 ether)---");
             return payrollInstance.addEmployee(accounts[1], 2);
         }).catch(function(error) {
+            assert.include(error.toString(), "invalid opcode", "Fail");
         });
             //try to use the method below but failed? 
             /*
@@ -51,6 +53,7 @@ contract('PayrollTEST', function(accounts){
           console.log("---addEmployee(accounts[2],2 ether), from accounts[3]---");
           return payrollInstance.addEmployee(accounts[2], 1, {from: accounts[1]});
         }).catch(function(error) {
+            assert.include(error.toString(), "invalid opcode", "Fail");
         });
       });
 
@@ -60,6 +63,7 @@ contract('PayrollTEST', function(accounts){
           console.log("---removeEmployee(accounts[1]), from accounts[3]---");
           return payrollInstance.removeEmployee(accounts[1], {from: accounts[1]});
         }).catch(function(error){
+            assert.include(error.toString(), "invalid opcode", "Fail");
         });
     });
 
@@ -82,6 +86,7 @@ contract('PayrollTEST', function(accounts){
           console.log("---removeEmployee(accounts[1]), which is not existing now---");
           return payrollInstance.removeEmployee(accounts[1]);
         }).catch(function(error){
+            assert.include(error.toString(), "invalid opcode", "Fail");
         });
     });
   
