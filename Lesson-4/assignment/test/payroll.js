@@ -1,33 +1,49 @@
-var Payroll = artifacts.require("./Payroll.sol");
 
-contract('Payroll', function(accounts) {
-	var len = accounts.length;
-	var index = Math.floor(Math.random()*len + 1);
-	console.log("Add No." + index + " account");
-	var salary = 1;
-	
-
-	it ("Add employee.", function() {
+	it ("Others cannot add employee.", function() {
 		return Payroll.deployed().then(function(instance) {
 			payrollInstance = instance;
 
-			return payrollInstance.addEmployee(accounts[index], salary);
-		}).then(function() {
-			return payrollInstance.employees.call(accounts[index]);
-		}).then(function(employee) {
-			assert.equal(employee[1].valueOf(), web3.toWei(salary) , "Adding the employee failed");
+			return payrollInstance.removeEmployee(accounts[index], salary, {from: accounts[other]});
+		}).catch(function(err) {
+			assert.include(error.toString(),"Error: VM Exception while processing transaction: revert","Warning! Employees can add employees")
 		});
 	})
 
-	it ("Remove employee", function() {
+
+
+
+	it ("Employees add employee.", function() {
 		return Payroll.deployed().then(function(instance) {
 			payrollInstance = instance;
-			return payrollInstance.removeEmployee(accounts[index]);
-		}).then(function() {
-			return payrollInstance.employees.call(accounts[index]);
+
+			return payrollInstance.addEmployee(accounts[index], salary, {from: accounts[other]});
+		}).catch(err => {
+			exception = true;
 		}).then(function(employee) {
-			assert.equal(employee[0].valueOf(), 0x0 , "Deleting the employee failed");
+			assert.equal(exception,true,"Warning! Employees can add employees");
 		});
 	})
 
-});
+	it ("Employees cannot remove add employee.", function() {
+		return Payroll.deployed().then(function(instance) {
+			payrollInstance = instance;
+
+			return payrollInstance.removeEmployee(accounts[index], {from: accounts[other]});
+		}).catch(err => {
+			exception = true;
+		}).then(function(employee) {
+			assert.equal(exception,true,"Warning! Employees can remove other employees");
+		});
+	})
+
+	it ("Cannot remove non_exist employee.", function() {
+		return Payroll.deployed().then(function(instance) {
+			payrollInstance = instance;
+
+			return payrollInstance.removeEmployee(accounts[index], {from: accounts[other]});
+		}).catch(err => {
+			exception = true;
+		}).then(function(employee) {
+			assert.equal(exception,true,"Warning! Employees can remove other employees");
+		});
+	})
