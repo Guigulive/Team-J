@@ -36,7 +36,9 @@ contract Payroll is Ownable{
         employee.id.transfer(payment);
     }
     
-    function addEmployee(address employeeId, uint salary) onlyOwner employeeNotExist(employeeId){
+    function addEmployee(address employeeId, uint inputsalary) onlyOwner employeeNotExist(employeeId){
+        assert(inputsalary > 0);
+        uint salary = uint(inputsalary);
         var employee = employees[employeeId];
         totalSalary = totalSalary.add((salary * 1 ether));
         employees[employeeId]= Employee(employeeId,(salary * 1 ether),now);
@@ -50,7 +52,9 @@ contract Payroll is Ownable{
     }
     
     //update the salary of one employee
-    function updateEmployee(address employeeId, uint salary) onlyOwner employeeExist(employeeId){
+    function updateEmployee(address employeeId, uint inputsalary) onlyOwner employeeExist(employeeId){
+        assert(inputsalary > 0);
+        uint salary = uint(inputsalary);
         var employee = employees[employeeId];
         _partialPaid(employee);
         totalSalary = (totalSalary.add(salary * 1 ether)).sub(employee.salary);
