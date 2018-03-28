@@ -15,45 +15,6 @@ class Employer extends Component {
     };
   }
 
-  addFund = () => {
-    const { payroll, employer, web3} = this.props;
-    payroll.addFund({
-      from: employer,
-      value: web3.toWei(this.fundInput.value)
-    });
-  }
-
-  addEmployee = () => {
-    const { payroll, employer} = this.props;
-    payroll.addEmployee(this.employerInput.value, parseInt(this.salaryInput.value), {
-      from: employer,
-      gas: 1000000
-    }).then((result) => {
-      alert('success');
-    });
-  }
-
-  updateEmployee = () => {
-    const { payroll, employer} = this.props;
-    payroll.updateEmployee(this.employerInput.value, parseInt(this.salaryInput.value), {
-      from: employer,
-      gas: 1000000
-    }).then((result) => {
-      alert('success');
-    });
-  }
-
-  removeEmployee = () => {
-    const { payroll, employer} = this.props;
-    payroll.removeEmployee(this.removeEmployeeInput.value, {
-      from: employer,
-      gas: 1000000
-    }).then((result) => {
-      alert('success');
-    });
-  }
-
-
   componentDidMount() {
     const { account, payroll } = this.props;
     payroll.owner.call({
