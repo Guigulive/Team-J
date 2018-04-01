@@ -1,0 +1,154 @@
+/*作业请提交在这个目录下*/
+
+智能合约代码：
+pragma solidity ^0.4.14;
+
+contract Payroll{
+    uint constant payDuration = 10 seconds;
+    
+    struct Employee {
+        address id;
+        uint salary;
+        uint lastPayDay;
+    }
+    
+    address owner;
+    Employee []employees;
+    
+    uint totalSalary = 0;
+    
+    //construct function：owner who create this contract
+    function Payroll() {
+        owner = msg.sender; 
+    }
+    
+    //employee only get once in a payDuration
+    function _patialPaid(Employee employee) private {
+        uint payment = employee.salary * (now - employee.lastPayDay) / payDuration;
+        employee.id.transfer(payment);
+    }
+    
+    //find the target employee
+    function _findEmployee(address employeeId) private returns (Employee, uint){
+        for(uint i = 0; i < employees.length; i++){
+            if(employees[i].id == employeeId){
+                return (employees[i],i);
+            }
+        }
+    }
+    
+    function addEmployee(address employeeId, uint salary){
+        require(msg.sender == owner);
+        
+        var(employee, index) = _findEmployee(employeeId);
+        assert(employee.id == 0x0);
+        
+        //push
+        employees.push(Employee(employeeId, salary * 1 ether, now));
+        
+        totalSalary += employees[index].salary;
+    }
+    
+    function removeEmployee(address employeeId){
+        require(msg.sender == owner);
+        
+        var(employee, index) = _findEmployee(employeeId);
+        assert(employee.id == 0x0);//employee exist
+        
+        _patialPaid(employee);
+        
+        delete employees[index];//delete employee but blank
+        employees[index] = employees[employees.length -1]; //the last one move to the index of delete
+        employees.length -=1;
+        
+        totalSalary -= employees[index].salary;
+    }
+    
+    function updateEmployee(address employeeId,uint salary) {
+        require(msg.sender == owner); 
+        
+        var(employee, index) = _findEmployee(employeeId);
+        assert(employee.id == 0x0);//employee exist
+        
+        _patialPaid(employee);
+        
+        employee.salary = salary;
+        employee.lastPayDay = now;
+    }
+    
+    function addFund() payable returns (uint){
+        return this.balance;
+    }
+    
+    function calculateRunway() returns (uint){
+        //uint totalSalary = 0;
+        //for(uint i = 0; i < employees.length; i++){
+            //totalSalary += employees[i].salary;
+        //}
+        return this.balance / totalSalary;
+    }
+    
+    function hasEnoughFund() returns (bool){
+        return calculateRunway() > 0;
+    }
+    
+    function getPaid(){
+        var(employee, index) = _findEmployee(msg.sender);
+        assert(employee.id != 0x0);
+   
+        uint nextPayday = employee.lastPayDay + payDuration;
+        if(nextPayday > now){
+            revert();
+        }
+        
+        employee.lastPayDay = nextPayday;
+        employee.id.transfer(employee.salary);
+    }
+    
+}
+
+问题：gas消耗的变化情况？
+加入十个员工，每次调用calculateRunway函数，gas消耗的情况：  
+        员工一：22966+1694    员工二 ：23747+2475    员工三：24528+3256  员工四 ：25309+4037  员工五：26090+4818 
+        员工六：26871+5599    员工七：27652+6380      员工八：28433+7161 员工九：29214+7942   员工十：29995+8723
+随着增加的员工数目越多，calculateRunway消耗的gas越来越多。   
+
+
+问题：如何优化calculateRunway减少gas的消耗？
+gas消耗增加的原因：每次call函数calculateRunway，都要遍历员工数组，出现重复计算totalSalary += employees[i].salary;
+
+优化：
+第一步：设置全局变量：uint totalSalary = 0;
+第二步：
+addEmployee（）中：totalSalary += employees[index].salary;
+removeEmployee（）中：totalSalary -= employees[index].salary;
+updateEmployee（）中：totalSalary += employees[index].salary;
+第三步：
+function calculateRunway() returns (uint){
+        return this.balance / totalSalary;
+    }
+每次添加或移除员工的时候，直接计算totalSalary，避免再次遍历数组重复计算消耗gas。
+
+优化后gas消耗情况：
+第一个员工:0x0e12d2a6c927b56af04a3969f130527284941235
+addEmployee（）gas消耗：125942+103070
+calculateRunway（）的gas消耗：22124+852
+gas：251988
+
+第二个员工：0xbf066b7d24c46619974574721136cd3dc91679e4
+addEmployee（）gas消耗：96783+73911
+calculateRunway（）的gas消耗：22124+852
+gas：193670
+
+第三个员工：0x4c40ba0c9b79a2375b5ada767ac76c7c705edf50
+addEmployee（）gas消耗：97624+74752
+calculateRunway（）的gas消耗：22124+852
+gas：195370
+
+第四个员工：0x046d1777aff6e37020d4c632e666fbdab41ce652
+addEmployee（）gas消耗：98465+75593
+calculateRunway（）的gas消耗：22124+852
+gas：197034
+
+优化后，calculateRunway（）的gas消耗不变，为22124+852，addEmployee（）和calculateRunway（）的整体gas消耗小于优化之前。
+
