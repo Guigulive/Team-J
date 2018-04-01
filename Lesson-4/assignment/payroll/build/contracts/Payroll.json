@@ -1,0 +1,100 @@
+{
+    "contractName": "Payroll",
+    "abi": [
+      {
+        "constant": false,
+        "inputs": [],
+        "name": "hasEnoughFund",
+        "outputs": [
+          {
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "employeeId",
+            "type": "address"
+          },
+          {
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "name": "updateEmployee",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [],
+        "name": "addFund",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [],
+        "name": "getPaid",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "employees",
+        "outputs": [
+          {
+            "name": "id",
+            "type": "address"
+          },
+          {
+            "name": "salary",
+            "type": "uint256"
+          },
+          {
+            "name": "lastPayday",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "input": [
+          {
+              "name": "employeeId",
+              "type": "address"
+          }
+        ],
+        "name": "removeEmployee",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }]
+}
